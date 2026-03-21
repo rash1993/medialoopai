@@ -1,0 +1,4 @@
+.env
+.wrangler/
+.claude/
+node_modules/

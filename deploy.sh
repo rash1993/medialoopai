@@ -4,10 +4,13 @@
 
 set -e
 
-# Use env var or prompt
+# Auto-load token from .env if present
+if [ -f .env ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
+
 if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-    echo "Set CLOUDFLARE_API_TOKEN env var or export it first"
-    echo "  export CLOUDFLARE_API_TOKEN=your_token_here"
+    echo "Set CLOUDFLARE_API_TOKEN in .env or export it first"
     exit 1
 fi
 
