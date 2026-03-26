@@ -495,11 +495,13 @@
         }
     });
 
-    /* ═══════ Inject share buttons on each card ═══════ */
+    /* ═══════ Inject share buttons next to each title ═══════ */
     document.querySelectorAll('.video-card[id]').forEach(card => {
+        const h4 = card.querySelector('h4');
+        if (!h4) return;
         const btn = document.createElement('button');
         btn.className = 'share-btn';
-        btn.setAttribute('data-tooltip', 'Copy link');
+        btn.title = 'Copy link';
         btn.innerHTML = ICON_LINK;
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -507,15 +509,13 @@
             navigator.clipboard.writeText(url).then(() => {
                 btn.classList.add('copied');
                 btn.innerHTML = ICON_CHECK;
-                btn.setAttribute('data-tooltip', 'Copied!');
                 setTimeout(() => {
                     btn.classList.remove('copied');
                     btn.innerHTML = ICON_LINK;
-                    btn.setAttribute('data-tooltip', 'Copy link');
-                }, 2000);
+                }, 1500);
             });
         });
-        card.appendChild(btn);
+        h4.appendChild(btn);
     });
 
     /* ═══════ Section header links ═══════ */

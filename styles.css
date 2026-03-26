@@ -762,36 +762,20 @@ footer {
     font-family: var(--mono); font-size: 0.6875rem;
     color: var(--ink-tertiary); letter-spacing: 0.02em;
 }
-/* Share icon — small, icon-only, top-right of card */
-.video-card { position: relative; }
+/* Share link icon — inline next to title */
+.video-info h4 { display: flex; align-items: baseline; gap: 0.4rem; }
 .share-btn {
-    position: absolute; top: 10px; right: 10px; z-index: 2;
-    display: flex; align-items: center; justify-content: center;
-    width: 28px; height: 28px; border-radius: 50%;
-    background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; width: 18px; height: 18px;
+    background: none; border: none; padding: 0;
     color: var(--ink-tertiary); cursor: pointer;
-    opacity: 0; transition: opacity 0.2s, color 0.2s, background 0.2s, transform 0.15s;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    padding: 0;
+    opacity: 0; transition: opacity 0.2s, color 0.15s;
+    position: relative; top: 1px;
 }
-.video-card:hover .share-btn, .share-btn:focus { opacity: 1; }
-.share-btn:hover { color: var(--accent); background: #fff; transform: scale(1.1); }
-.share-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
-.share-btn.copied {
-    opacity: 1; color: #16a34a; background: #f0fdf4;
-    border-color: #bbf7d0;
-}
-/* Tooltip */
-.share-btn::after {
-    content: attr(data-tooltip); position: absolute; top: 100%; right: 0;
-    margin-top: 6px; padding: 3px 8px; border-radius: 4px;
-    background: var(--ink-primary); color: #fff;
-    font-family: var(--mono); font-size: 0.5625rem; font-weight: 500;
-    white-space: nowrap; pointer-events: none;
-    opacity: 0; transition: opacity 0.15s; letter-spacing: 0.02em;
-}
-.share-btn:hover::after { opacity: 1; }
-.share-btn.copied::after { opacity: 1; background: #16a34a; }
+.video-card:hover .share-btn { opacity: 0.45; }
+.share-btn:hover { opacity: 1 !important; color: var(--accent); }
+.share-btn svg { width: 14px; height: 14px; }
+.share-btn.copied { opacity: 1 !important; color: #16a34a; }
 
 /* ─── Video Lightbox Modal ─── */
 body.lightbox-open { overflow: hidden; }
