@@ -755,9 +755,46 @@ footer {
     font-size: 0.8125rem; color: var(--ink-secondary);
     line-height: 1.6; margin-bottom: 0.5rem;
 }
+.card-meta-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+}
 .card-meta {
     font-family: var(--mono); font-size: 0.6875rem;
     color: var(--ink-tertiary); letter-spacing: 0.02em;
+}
+.share-btn {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.25rem 0.5rem;
+    font-family: var(--mono); font-size: 0.625rem; font-weight: 500;
+    color: var(--ink-tertiary); cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    white-space: nowrap;
+}
+.share-btn:hover {
+    color: var(--accent); border-color: var(--accent);
+    background: rgba(28,25,23,0.03);
+}
+.share-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+.share-btn.copied {
+    color: #16a34a; border-color: #16a34a;
+    background: rgba(74,222,128,0.08);
+}
+/* Section header share link */
+.section-header h2 a.section-link {
+    color: inherit; text-decoration: none;
+}
+.section-header h2 a.section-link:hover .section-hash {
+    opacity: 1;
+}
+.section-hash {
+    color: var(--accent); opacity: 0; margin-left: 0.35rem;
+    transition: opacity 0.2s; font-weight: 400;
+}
+/* Highlighted card from hash navigation */
+.video-card.hash-target {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(28,25,23,0.08), 0 8px 28px rgba(28,25,23,0.06);
 }
 
 /* ─── Showcase CTA ─── */
