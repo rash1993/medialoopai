@@ -762,35 +762,47 @@ footer {
     font-family: var(--mono); font-size: 0.6875rem;
     color: var(--ink-tertiary); letter-spacing: 0.02em;
 }
-/* Share link button on each card */
+/* Share icon — small, icon-only, top-right of card */
+.video-card { position: relative; }
 .share-btn {
-    display: inline-flex; align-items: center; gap: 0.3rem;
-    background: none; border: 1px solid var(--border);
-    border-radius: 6px; padding: 0.25rem 0.5rem;
-    font-family: var(--mono); font-size: 0.625rem; font-weight: 500;
+    position: absolute; top: 10px; right: 10px; z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.92); border: 1px solid var(--border);
     color: var(--ink-tertiary); cursor: pointer;
-    transition: color 0.2s, border-color 0.2s, background 0.2s;
-    white-space: nowrap;
+    opacity: 0; transition: opacity 0.2s, color 0.2s, background 0.2s, transform 0.15s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    padding: 0;
 }
-.share-btn:hover {
-    color: var(--accent); border-color: var(--accent);
-    background: rgba(28,25,23,0.03);
-}
-.share-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+.video-card:hover .share-btn, .share-btn:focus { opacity: 1; }
+.share-btn:hover { color: var(--accent); background: #fff; transform: scale(1.1); }
+.share-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
 .share-btn.copied {
-    color: #16a34a; border-color: #16a34a;
-    background: rgba(74,222,128,0.08);
+    opacity: 1; color: #16a34a; background: #f0fdf4;
+    border-color: #bbf7d0;
 }
+/* Tooltip */
+.share-btn::after {
+    content: attr(data-tooltip); position: absolute; top: 100%; right: 0;
+    margin-top: 6px; padding: 3px 8px; border-radius: 4px;
+    background: var(--ink-primary); color: #fff;
+    font-family: var(--mono); font-size: 0.5625rem; font-weight: 500;
+    white-space: nowrap; pointer-events: none;
+    opacity: 0; transition: opacity 0.15s; letter-spacing: 0.02em;
+}
+.share-btn:hover::after { opacity: 1; }
+.share-btn.copied::after { opacity: 1; background: #16a34a; }
 
 /* ─── Video Lightbox Modal ─── */
+body.lightbox-open { overflow: hidden; }
 .video-lightbox {
     position: fixed; inset: 0; z-index: 9999;
     display: flex; align-items: center; justify-content: center;
-    opacity: 0; visibility: hidden;
+    opacity: 0; visibility: hidden; pointer-events: none;
     transition: opacity 0.35s ease, visibility 0.35s ease;
 }
 .video-lightbox.open {
-    opacity: 1; visibility: visible;
+    opacity: 1; visibility: visible; pointer-events: auto;
 }
 .video-lightbox-backdrop {
     position: absolute; inset: 0;
