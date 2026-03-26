@@ -362,8 +362,121 @@
 
 <footer><div class="container"><span>&copy; 2026 Rahul Sharma</span></div></footer>
 
+<!-- ═══════════════════ VIDEO LIGHTBOX ═══════════════════ -->
+<div class="video-lightbox" id="video-lightbox">
+    <div class="video-lightbox-backdrop"></div>
+    <div class="video-lightbox-content">
+        <span class="lightbox-esc-hint">ESC to close</span>
+        <button class="video-lightbox-close" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        <div class="video-lightbox-embed">
+            <iframe id="lightbox-iframe" src="" frameborder="0" allowfullscreen allow="autoplay; fullscreen"></iframe>
+        </div>
+        <div class="video-lightbox-info">
+            <div class="lightbox-cat" id="lightbox-cat"></div>
+            <h3 id="lightbox-title"></h3>
+            <p id="lightbox-desc"></p>
+        </div>
+        <div class="video-lightbox-actions">
+            <button class="lightbox-btn lightbox-btn-browse" id="lightbox-browse">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 8h12M8 2v12"/></svg>
+                Browse all examples
+            </button>
+            <button class="lightbox-btn lightbox-btn-copy" id="lightbox-copy">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5a2.5 2.5 0 0 0 3.48 2.31l.02-.01"/><path d="M10 7.5a2.5 2.5 0 0 0-3.48-2.31l-.02.01"/><path d="M13 5.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/><path d="M7 10.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>
+                Copy link
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Inject type badges into video-info based on data-cat
+    /* ═══════ SVG icon strings ═══════ */
+    const ICON_SHARE = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5a2.5 2.5 0 0 0 3.48 2.31l.02-.01"/><path d="M10 7.5a2.5 2.5 0 0 0-3.48-2.31l-.02.01"/><path d="M13 5.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/><path d="M7 10.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>';
+    const ICON_CHECK = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>';
+    const ICON_LINK  = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 9.5l3-3"/><path d="M9 11l1.5-1.5a2.12 2.12 0 0 0-3-3L6 8"/><path d="M7 5L5.5 6.5a2.12 2.12 0 0 0 3 3L10 8"/></svg>';
+
+    /* ═══════ Lightbox logic ═══════ */
+    const lightbox       = document.getElementById('video-lightbox');
+    const lightboxIframe = document.getElementById('lightbox-iframe');
+    const lightboxCat    = document.getElementById('lightbox-cat');
+    const lightboxTitle  = document.getElementById('lightbox-title');
+    const lightboxDesc   = document.getElementById('lightbox-desc');
+    const lightboxCopy   = document.getElementById('lightbox-copy');
+    const lightboxBrowse = document.getElementById('lightbox-browse');
+    let currentLightboxId = null;
+
+    function openLightbox(cardId) {
+        const card = document.getElementById(cardId);
+        if (!card) return;
+        const iframe = card.querySelector('iframe');
+        const cat    = card.querySelector('.card-cat');
+        const title  = card.querySelector('h4');
+        const desc   = card.querySelector('.video-info > p');
+
+        lightboxIframe.src   = iframe ? iframe.src : '';
+        lightboxCat.textContent   = cat ? cat.textContent : '';
+        lightboxTitle.textContent = title ? title.textContent : '';
+        lightboxDesc.textContent  = desc ? desc.textContent : '';
+        currentLightboxId = cardId;
+
+        // Reset copy button
+        lightboxCopy.classList.remove('copied');
+        lightboxCopy.innerHTML = ICON_LINK + ' Copy link';
+
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('open');
+        document.body.style.overflow = '';
+        // Stop iframe playback
+        setTimeout(() => { lightboxIframe.src = ''; }, 350);
+        currentLightboxId = null;
+    }
+
+    // Close triggers
+    lightbox.querySelector('.video-lightbox-backdrop').addEventListener('click', closeLightbox);
+    lightbox.querySelector('.video-lightbox-close').addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+    });
+
+    // Browse button — close lightbox and scroll to the card in gallery
+    lightboxBrowse.addEventListener('click', () => {
+        const id = currentLightboxId;
+        closeLightbox();
+        if (id) {
+            // Reset filters to show all
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+            document.querySelectorAll('.video-card').forEach(c => c.style.display = '');
+            document.querySelectorAll('.gallery-section').forEach(s => s.style.display = '');
+            document.querySelectorAll('.subsection-label').forEach(l => l.style.display = '');
+            setTimeout(() => {
+                document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 400);
+        }
+    });
+
+    // Copy link button inside lightbox
+    lightboxCopy.addEventListener('click', () => {
+        if (!currentLightboxId) return;
+        const url = window.location.origin + window.location.pathname + '#' + currentLightboxId;
+        navigator.clipboard.writeText(url).then(() => {
+            lightboxCopy.classList.add('copied');
+            lightboxCopy.innerHTML = ICON_CHECK + ' Copied!';
+            history.replaceState(null, '', '#' + currentLightboxId);
+            setTimeout(() => {
+                lightboxCopy.classList.remove('copied');
+                lightboxCopy.innerHTML = ICON_LINK + ' Copy link';
+            }, 2000);
+        });
+    });
+
+    /* ═══════ Inject type badges ═══════ */
     document.querySelectorAll('.video-card').forEach(card => {
         const cat = card.dataset.cat;
         const info = card.querySelector('.video-info');
@@ -375,30 +488,30 @@
         }
     });
 
-    // Inject share buttons into every card
+    /* ═══════ Inject share buttons on each card ═══════ */
     document.querySelectorAll('.video-card[id]').forEach(card => {
         const row = card.querySelector('.card-meta-row');
         if (!row) return;
         const btn = document.createElement('button');
         btn.className = 'share-btn';
-        btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5a2.5 2.5 0 0 0 3.48 2.31l.02-.01"/><path d="M10 7.5a2.5 2.5 0 0 0-3.48-2.31l-.02.01"/><path d="M13 5.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/><path d="M7 10.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>Share';
+        btn.innerHTML = ICON_SHARE + 'Share';
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const url = window.location.origin + window.location.pathname + '#' + card.id;
             navigator.clipboard.writeText(url).then(() => {
                 btn.classList.add('copied');
-                btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>Copied!';
+                btn.innerHTML = ICON_CHECK + 'Copied!';
                 history.replaceState(null, '', '#' + card.id);
                 setTimeout(() => {
                     btn.classList.remove('copied');
-                    btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5a2.5 2.5 0 0 0 3.48 2.31l.02-.01"/><path d="M10 7.5a2.5 2.5 0 0 0-3.48-2.31l-.02.01"/><path d="M13 5.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/><path d="M7 10.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>Share';
+                    btn.innerHTML = ICON_SHARE + 'Share';
                 }, 2000);
             });
         });
         row.appendChild(btn);
     });
 
-    // Make section headers linkable
+    /* ═══════ Section header links ═══════ */
     document.querySelectorAll('.gallery-section[id] .section-header h2').forEach(h2 => {
         const sectionId = h2.closest('.gallery-section').id;
         const link = document.createElement('a');
@@ -416,32 +529,27 @@
         h2.appendChild(link);
     });
 
-    // On page load: scroll to hash target and highlight it
+    /* ═══════ Hash routing on page load ═══════ */
     function handleHash() {
         const hash = window.location.hash.slice(1);
         if (!hash) return;
         const target = document.getElementById(hash);
         if (!target) return;
 
-        // If target is a video card, make sure its section is visible (reset filters to "all")
         if (target.classList.contains('video-card')) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
-            document.querySelectorAll('.video-card').forEach(c => c.style.display = '');
-            document.querySelectorAll('.gallery-section').forEach(s => s.style.display = '');
-            document.querySelectorAll('.subsection-label').forEach(l => l.style.display = '');
+            // Video link → open in lightbox
+            setTimeout(() => openLightbox(hash), 200);
+        } else {
+            // Section link → scroll to section
+            setTimeout(() => {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
         }
-
-        setTimeout(() => {
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            target.classList.add('hash-target');
-            setTimeout(() => target.classList.remove('hash-target'), 3000);
-        }, 300);
     }
     handleHash();
     window.addEventListener('hashchange', handleHash);
 
-    // Filters
+    /* ═══════ Filters ═══════ */
     const filterBtns = document.querySelectorAll('.filter-btn');
     const cards = document.querySelectorAll('.video-card');
 
@@ -468,7 +576,7 @@
         });
     });
 
-    // Scroll reveal
+    /* ═══════ Scroll reveal ═══════ */
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         const obs = new IntersectionObserver((entries) => {
             entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
